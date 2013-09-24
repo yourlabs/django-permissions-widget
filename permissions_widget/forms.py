@@ -32,10 +32,14 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
         permission_types = []
 
         for permission in self.choices.queryset:
-            app = permission.content_type.app_label
-            model = permission.content_type.model
             codename = permission.codename
             permission_type = codename.split('_')[0]
+            app = permission.content_type.app_label
+
+            model = permission.content_type.model_class()
+            # is it an obsolete contenttype ?
+            if model is None:
+                continue
 
             if app in EXCLUDE_APPS:
                 continue
