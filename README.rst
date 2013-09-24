@@ -41,7 +41,7 @@ Resources
 ---------
 
 - `Documentation graciously hosted
-  <http://django-permissions-widget.rtfd.org>`_ by `RTFD
+  <http://permissions-widget.rtfd.org>`_ by `RTFD
   <http://rtfd.org>`_, read the complete documentation.
 - `Mailing list graciously hosted
   <http://groups.google.com/group/yourlabs>`_ by `Google
