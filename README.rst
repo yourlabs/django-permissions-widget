@@ -33,7 +33,8 @@ Quick Install
 -------------
 
 - Install the latest release via: `pip install django-permissions-widget`.
-- Add to `settings.INSTALLED_APPS`: `permissions_widget`.
+- Add to `settings.INSTALLED_APPS`, after `django.contrib.admin` which we want
+  to override: `'permissions_widget',`.
 
 That's it ! You should have a sane permissions widget now.
 
