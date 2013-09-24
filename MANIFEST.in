@@ -1,0 +1,2 @@
+include *.rst LICENSE AUTHORS CHANGELOG
+recursive-include permissions_widget * 
