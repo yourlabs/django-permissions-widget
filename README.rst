@@ -5,7 +5,7 @@
 
 By default, Django's admin provides a permission widget which looks like this:
 
-.. image:: images/default_widget.png
+.. image:: http://permissions-widget.readthedocs.org/en/latest/_static/images/default_widget.png
 
 There are several problems with this widget:
 
@@ -21,7 +21,7 @@ The purpose of this app is to provide a better widget for selecting permissions
 as well as an easy way to replace the default permissions widget in your admin
 site. It will look like this:
 
-.. image:: images/new_widget.png
+.. image:: http://permissions-widget.readthedocs.org/en/latest/_static/images/new_widget.png
 
 Requirements
 ------------
