@@ -5,7 +5,7 @@
         <td></td>
         {% for permission_type in permission_types %}
         <th>
-            {{ permission_type }}
+            {{ permission_type|capfirst }}
         </th>
         {% endfor %}
     </tr>
@@ -13,7 +13,7 @@
     {% for row in table %}
     <tr>
         <th>
-            {{ row.model }}
+            {{ row.model|capfirst }}
         </th>
         {% for permission_type in permission_types %}
             {% with row.permissions|get_item:permission_type as permission %}

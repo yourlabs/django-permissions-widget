@@ -40,6 +40,7 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
             # is it an obsolete contenttype ?
             if model is None:
                 continue
+            model = model._meta.verbose_name
 
             if app in EXCLUDE_APPS:
                 continue
