@@ -1,0 +1,11 @@
+[
+{
+    "pk": 1, 
+    "model": "sites.site", 
+    "fields": {
+        "domain": "test_project.com", 
+        "name": "test_project"
+    }
+}
+]
+

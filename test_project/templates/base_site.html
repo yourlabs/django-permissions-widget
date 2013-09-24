@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+{% load compress i18n static %}
+<html>
+    <head>
+        <title>{% block head_title %}{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        {# All less css goes in static/main.less, this handles it #}
+        {% if settings.COMPRESS_ENABLED %}
+            {% compress css %}
+                <link href="{% static 'main.less' %}" charset="utf-8" media="screen" type="text/less" rel="stylesheet">
+            {% endcompress %}
+        {% else %}
+            <link href="{% static 'main.less' %}" charset="utf-8" media="screen" type="text/less" rel="stylesheet">
+            <script type="text/javascript">less = {}; less.env = 'development';</script>
+            <script type="text/javascript" src="{% static 'less/less.js' %}" ></script>
+        {% endif %}
+
+        {% compress css %}{# External apps css go here #}
+        <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/style.css' %}" />
+        {% endcompress %}
+
+        {# HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries #}
+        <!--[if lt IE 9]>
+          {% compress js %}
+          <script src="{% static 'bootstrap/assets/js/html5shiv.js' %}"></script>
+          <script src="{% static 'bootstrap/assets/js/respond.min.js' %}"></script>
+          {% endcompress %}
+        <![endif]-->
+        
+        {% block extra_head %}{% endblock %}
+    </head>
+    <body>
+        {% block body %}
+        <h1>Hello, world!</h1>
+        {% endblock %}
+
+        {% compress js %}{# All js go here #}
+        <script type="text/javascript" src="{% static 'jquery/jquery.js' %}"></script>
+        <script type="text/javascript" src="{% static 'bootstrap/dist/js/bootstrap.js' %}"></script>
+        
+        <script type="text/javascript" src="{% static 'autocomplete_light/autocomplete.js' %}"></script>
+        <script type="text/javascript" src="{% static 'autocomplete_light/widget.js' %}"></script>
+        <script type="text/javascript" src="{% static 'autocomplete_light/addanother.js' %}"></script>
+        <script type="text/javascript" src="{% static 'autocomplete_light/text_widget.js' %}"></script>
+        {% include 'autocomplete_light/_ajax_csrf.html' %}
+        {% endcompress %}
+
+        {% block extra_body %}{% endblock %}
+    </body>
+</html>

@@ -1,0 +1,27 @@
+{% load permissions_widget_tags %}
+
+<table>
+    <tr>
+        <td></td>
+        {% for permission_type in permission_types %}
+        <th>
+            {{ permission_type }}
+        </th>
+        {% endfor %}
+    </tr>
+
+    {% for row in table %}
+    <tr>
+        <th>
+            {{ row.model }}
+        </th>
+        {% for permission_type in permission_types %}
+            {% with row.permissions|get_item:permission_type as permission %}
+            <td>
+                <input name="{{ name }}" {% if permission.value in value %}checked="checked"{% endif %} value="{{ permission.value }}" type="checkbox" />
+            </td>
+            {% endwith %}
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>

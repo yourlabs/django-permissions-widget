@@ -1,0 +1,5 @@
+# those require compiling toolchain, you can remove them if your OS
+# is broken ...
+pil
+pylibmc
+werkzeug==0.3
