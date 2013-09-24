@@ -28,8 +28,10 @@ from django.conf import settings
 
 
 EXCLUDE_APPS = getattr(settings, 'PERMISSIONS_WIDGET_EXCLUDE_APPS', [
-    'reversion', 'contenttypes', 'admin', 'sessions'])
-EXCLUDE_MODELS = getattr(settings, 'PERMISSIONS_WIDGET_EXCLUDE_MODELS', [])
+    'sites', 'reversion', 'contenttypes', 'admin', 'sessions',
+    'easy_thumbnails',])
+EXCLUDE_MODELS = getattr(settings, 'PERMISSIONS_WIDGET_EXCLUDE_MODELS', [
+    'auth.permission',])
 PATCH_USERADMIN = getattr(settings, 'PERMISSIONS_WIDGET_PATCH_USERADMIN', True)
 PATCH_GROUPADMIN = getattr(settings, 'PERMISSIONS_WIDGET_PATCH_GROUPADMIN',
                            True)
