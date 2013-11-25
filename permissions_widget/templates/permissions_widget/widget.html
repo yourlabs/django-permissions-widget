@@ -18,7 +18,11 @@
         {% for permission_type in permission_types %}
             {% with row.permissions|get_item:permission_type as permission %}
             <td>
-                <input name="{{ name }}" {% if permission.value in value %}checked="checked"{% endif %} value="{{ permission.value }}" type="checkbox" />
+                {% if permission.value == None %}
+                    <input type="checkbox" disabled="disabled" />
+                {% else %}
+                    <input name="{{ name }}" {% if permission.value in value %}checked="checked"{% endif %} value="{{ permission.value }}" type="checkbox" />
+                {% endif %}
             </td>
             {% endwith %}
         {% endfor %}
