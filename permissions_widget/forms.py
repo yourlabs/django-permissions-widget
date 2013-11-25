@@ -12,6 +12,7 @@ from django import template
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import Permission
+import itertools
 
 from .settings import EXCLUDE_APPS, EXCLUDE_MODELS
 
@@ -29,18 +30,22 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
         row = None
         last_app = None
         last_model = None
-        permission_types = []
+        permission_types = {}
 
         for permission in self.choices.queryset:
             codename = permission.codename
-            permission_type = codename.split('_')[0]
+            model_part = "_" + permission.content_type.model
+            permission_type = codename
+            if permission_type.endswith(model_part):
+                permission_type = permission_type[:-len(model_part)]
             app = permission.content_type.app_label
+            setattr(permission, "permission_type", permission_type)
+            setattr(permission, "value", permission.pk)
 
-            model = permission.content_type.model_class()
-            # is it an obsolete contenttype ?
-            if model is None:
-                continue
-            model = model._meta.verbose_name
+            model_class = permission.content_type.model_class()
+            model = model_class
+            if model is not None:
+                model = model._meta.verbose_name
 
             if app in EXCLUDE_APPS:
                 continue
@@ -48,28 +53,33 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
             if u'%s.%s' % (app, model) in EXCLUDE_MODELS:
                 continue
 
-            if permission_type not in permission_types:
-                permission_types.append(permission_type)
+            permission_types.setdefault(permission_type, [])
+            permission_types[permission_type].append(permission)
 
-            if last_model != model or last_app != app:
+            if last_model != model_class or last_app != app:
                 if row:
                     table.append(row)
-                row = dict(model=model, app=app, permissions={})
+                row = dict(model=model, model_class=model_class, app=app, permissions={})
 
             # place permission
             row['permissions'][permission_type] = {
                 'value': permission.pk,
+                'name': permission.name,
             }
 
             last_app = app
-            last_model = model
+            last_model = model_class
+
+        permission_types_standard = {k: v for k, v in permission_types.iteritems() if len(v) > 1}
+        permission_types_custom = [p for p in itertools.chain(*[v[1] for v in permission_types.iteritems()]) if p.permission_type not in permission_types_standard]
 
         t = get_template('permissions_widget/widget.html')
         c = template.Context({
             'name': name,
             'value': value,
             'table': table,
-            'permission_types': permission_types,
+            'permission_types': permission_types_standard,
+            'permission_types_custom': permission_types_custom,
         })
         return mark_safe(t.render(c))
 
