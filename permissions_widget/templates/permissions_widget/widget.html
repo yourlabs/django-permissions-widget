@@ -21,12 +21,13 @@
            </th>
         </tr>
     {% endifchanged %}
+    {% ifchanged row.model %}
     <tr>
         <td>
             {{ row.model|capfirst }}
         </td>
         {% for permission_type in permission_types %}
-            {% with row.permissions|get_item:permission_type as permission %}
+            {% with row.permission as permission %}
             <td>
                 {% if permission.value == None %}
                     <input type="checkbox" disabled="disabled" />
@@ -37,6 +38,7 @@
             {% endwith %}
         {% endfor %}
     </tr>
+    {% endifchanged %}
     {% endfor %}
 
     {% if permission_types_custom %}
@@ -45,6 +47,7 @@
         </tr>
     {% endif %}
     {% for row in table %}
+        {% ifchanged row.model %}
         {% with permission_types_custom|get_for_model:row as permissions %}
         {% if permissions %}
             <tr>
@@ -66,5 +69,6 @@
             {% endfor %}
         {% endif %}
         {% endwith %}
+        {% endifchanged %}
     {% endfor %}
 </table>

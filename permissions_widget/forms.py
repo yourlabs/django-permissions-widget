@@ -27,9 +27,6 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
             value = []
 
         table = []
-        row = None
-        last_app = None
-        last_model = None
         permission_types = {}
 
         for permission in self.choices.queryset:
@@ -39,6 +36,7 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
             if permission_type.endswith(model_part):
                 permission_type = permission_type[:-len(model_part)]
             app = permission.content_type.app_label
+
             setattr(permission, "permission_type", permission_type)
             setattr(permission, "value", permission.pk)
 
@@ -56,19 +54,9 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
             permission_types.setdefault(permission_type, [])
             permission_types[permission_type].append(permission)
 
-            if last_model != model_class or last_app != app:
-                if row:
-                    table.append(row)
-                row = dict(model=model, model_class=model_class, app=app, permissions={})
-
-            # place permission
-            row['permissions'][permission_type] = {
-                'value': permission.pk,
-                'name': permission.name,
-            }
-
-            last_app = app
-            last_model = model_class
+            permission = dict(value=permission.pk, name=permission.name, type=permission.permission_type)
+            row = dict(model=model, model_class=model_class, app=app, permission=permission)
+            table.append(row)
 
         permission_types_standard = {k: v for k, v in permission_types.iteritems() if len(v) > 1}
         permission_types_custom = [p for p in itertools.chain(*[v[1] for v in permission_types.iteritems()]) if p.permission_type not in permission_types_standard]
