@@ -27,7 +27,7 @@ OriginalUserAdmin = admin.site._registry[User].__class__
 OriginalUserChangeForm = OriginalUserAdmin.form
 
 class NewUserChangeForm(OriginalUserChangeForm):
-    user_permissions = PermissionSelectMultipleField()
+    user_permissions = PermissionSelectMultipleField(required=False)
 
 
 class NewUserAdmin(OriginalUserAdmin):
@@ -42,7 +42,7 @@ OriginalGroupChangeForm = OriginalGroupAdmin.form
 
 
 class NewGroupChangeForm(OriginalGroupChangeForm):
-    permissions = PermissionSelectMultipleField()
+    permissions = PermissionSelectMultipleField(required=False)
 
 
 class NewGroupAdmin(OriginalGroupAdmin):
