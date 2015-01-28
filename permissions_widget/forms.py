@@ -56,9 +56,8 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
             permission_types.setdefault(permission_type, [])
             permission_types[permission_type].append(permission)
 
-            if last_model != model_class or last_app != app:
-                if row:
-                    table.append(row)
+            is_app_or_model_different = last_model != model_class or last_app != app
+            if is_app_or_model_different:
                 row = dict(model=model_verbose_name, model_class=model_class, app=app, permissions={})
 
             # place permission
@@ -66,6 +65,9 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
                 'value': permission.pk,
                 'name': permission.name,
             }
+
+            if is_app_or_model_different:
+                table.append(row)
 
             last_app = app
             last_model = model_class
