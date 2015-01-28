@@ -27,11 +27,9 @@
             {{ row.model|capfirst }}
         </td>
         {% for permission_type in permission_types %}
-            {% with row.permission as permission %}
+            {% with row.permissions|get_item:permission_type as permission %}
             <td>
-                {% if permission.value == None %}
-                    <input type="checkbox" disabled="disabled" />
-                {% else %}
+                {% if permission %}
                     <input name="{{ name }}" title="{{ permission.name }}" {% if permission.value in value %}checked="checked"{% endif %} value="{{ permission.value }}" type="checkbox" />
                 {% endif %}
             </td>
