@@ -45,12 +45,13 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
             setattr(permission, "value", permission.pk)
 
             model_class = permission.content_type.model_class()
+            model_class_name = lower(model_class.__name__) if model_class else None
             model_verbose_name = model_class._meta.verbose_name if model_class else None
 
             if app in EXCLUDE_APPS:
                 continue
 
-            if u'%s.%s' % (app, lower(model_class.__name__)) in EXCLUDE_MODELS:
+            if model_class_name and u'%s.%s' % (app, model_class_name) in EXCLUDE_MODELS:
                 continue
 
             permission_types.setdefault(permission_type, [])
