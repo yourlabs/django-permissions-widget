@@ -7,6 +7,7 @@ PermissionSelectMultipleField
 PermissionSelectMultipleWidget
     The actual permissions widget.
 """
+from string import lower
 from django import forms
 from django import template
 from django.template.loader import get_template
@@ -44,14 +45,12 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
             setattr(permission, "value", permission.pk)
 
             model_class = permission.content_type.model_class()
-            model = model_class
-            if model is not None:
-                model = model._meta.verbose_name
+            model_verbose_name = model_class._meta.verbose_name if model_class else None
 
             if app in EXCLUDE_APPS:
                 continue
 
-            if u'%s.%s' % (app, model) in EXCLUDE_MODELS:
+            if u'%s.%s' % (app, lower(model_class.__name__)) in EXCLUDE_MODELS:
                 continue
 
             permission_types.setdefault(permission_type, [])
@@ -60,7 +59,7 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
             if last_model != model_class or last_app != app:
                 if row:
                     table.append(row)
-                row = dict(model=model, model_class=model_class, app=app, permissions={})
+                row = dict(model=model_verbose_name, model_class=model_class, app=app, permissions={})
 
             # place permission
             row['permissions'][permission_type] = {
