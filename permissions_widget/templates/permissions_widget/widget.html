@@ -33,7 +33,8 @@
                     {% with row.permissions|get_item:permission_type as permission %}
                         <td class="{{ permission_type }}">
                             {% if permission %}
-                                <input name="{{ name }}" title="{{ permission.name }}" {% if permission.pk in value %}checked="checked"{% endif %} value="{{ permission.pk }}" type="checkbox" />
+                                {% capture translated_permission_name %}{% blocktrans with translated_permission_name=permission.name|translate|capfirst %}{{ translated_permission_name }}{% endblocktrans %}{% endcapture %}
+                                <input name="{{ name }}" title="{{ translated_permission_name }}" {% if permission.pk in value %}checked="checked"{% endif %} value="{{ permission.pk }}" type="checkbox" />
                                 {% blocktrans with translated_permission_type=permission_type|translate|capfirst %}{{ translated_permission_type }}{% endblocktrans %}
                             {% endif %}
                         </td>
@@ -43,8 +44,9 @@
                     {% for permission_type in custom_permission_types %}
                         {% with row.permissions|get_item:permission_type as permission %}
                             {% if permission %}
-                                <input name="{{ name }}" title="{{ permission.name }}" {% if permission.pk in value %}checked="checked"{% endif %} value="{{ permission.pk }}" type="checkbox" />
-                                {{ permission.name }}
+                                {% capture translated_permission_name %}{% blocktrans with translated_permission_name=permission.name|translate|capfirst %}{{ translated_permission_name }}{% endblocktrans %}{% endcapture %}
+                                <input name="{{ name }}" title="{{ translated_permission_name }}" {% if permission.pk in value %}checked="checked"{% endif %} value="{{ permission.pk }}" type="checkbox" />
+                                {{ translated_permission_name }}
                                 <br>
                             {% endif %}
                         {% endwith %}
