@@ -1,4 +1,4 @@
-{% load permissions_widget_tags i18n utils %}
+{% load permissions_widget_tags i18n %}
 
 <table class="table permissions-widget">
     <thead>
@@ -6,7 +6,7 @@
             <th>{% trans 'App & Model' %}</th>
             {% for permission_type in default_permission_types %}
                 <th>
-                    {{ permission_type|capfirst }}
+                    {% blocktrans with translated_permission_type=permission_type|translate|capfirst %}{{ translated_permission_type }}{% endblocktrans %}
                 </th>
             {% endfor %}
             <th>
@@ -19,7 +19,7 @@
             {% ifchanged row.app %}
                 <tr>
                    <th colspan="{{ default_permission_types|length|add:"2" }}">
-                        {{ row.app|capfirst }}
+                        {% blocktrans with translated_app=row.app|translate|capfirst %}{{ translated_app }}{% endblocktrans %}
                    </th>
                 </tr>
             {% endifchanged %}
@@ -34,7 +34,7 @@
                         <td>
                             {% if permission %}
                                 <input name="{{ name }}" title="{{ permission.name }}" {% if permission.pk in value %}checked="checked"{% endif %} value="{{ permission.pk }}" type="checkbox" />
-                                {{ permission_type|capfirst }}
+                                {% blocktrans with translated_permission_type=permission_type|translate|capfirst %}{{ translated_permission_type }}{% endblocktrans %}
                             {% endif %}
                         </td>
                     {% endwith %}
