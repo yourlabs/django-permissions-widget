@@ -2,14 +2,15 @@
 Form widget and field.
 
 PermissionSelectMultipleField
-    An optionnal form field purely for your own convenience.
+    Permission field handling EXCLUDE_APPS and EXCLUDE_MODELS
+    settings.
 
 PermissionSelectMultipleWidget
     The actual permissions widget.
 """
-from string import lower
 from django import forms
 from django import template
+from django.db.models import Q
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import Permission
@@ -46,26 +47,22 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
         last_model = None
 
         for permission in self.choices.queryset:
+            # get permission type from codename
             codename = permission.codename
             model_part = "_" + permission.content_type.model
             permission_type = codename
             if permission_type.endswith(model_part):
                 permission_type = permission_type[:-len(model_part)]
+
+            # get app label and model verbose name
             app = permission.content_type.app_label
-
             model_class = permission.content_type.model_class()
-            model_class_name = lower(model_class.__name__) if model_class else None
             model_verbose_name = model_class._meta.verbose_name if model_class else None
-
-            if app in EXCLUDE_APPS:
-                continue
-
-            if model_class_name and u'%s.%s' % (app, model_class_name) in EXCLUDE_MODELS:
-                continue
 
             if permission_type not in list(DEFAULT_PERMISSIONS) + self.custom_permission_types:
                 self.custom_permission_types.append(permission_type)
 
+            # each row represents one model with its permissions categorized by type
             is_app_or_model_different = last_model != model_class or last_app != app
             if is_app_or_model_different:
                 row = dict(model=model_verbose_name, model_class=model_class, app=app, permissions={})
@@ -92,5 +89,19 @@ class PermissionSelectMultipleField(forms.ModelMultipleChoiceField):
     def __init__(self, queryset=None, *args, **kwargs):
         if queryset is None:
             queryset = Permission.objects.all()
+
+        # exclude models and apps by settings
+        exclude_models_q = Q()
+        for exclude_model in EXCLUDE_MODELS:
+            app_label, model = exclude_model.split('.')
+            exclude_models_q |= Q(
+                content_type__app_label=app_label,
+                content_type__model=model
+            )
+        queryset = queryset.exclude(
+            Q(content_type__app_label__in=EXCLUDE_APPS) |
+            exclude_models_q
+        )
+
         super(PermissionSelectMultipleField, self).__init__(queryset, *args,
                 **kwargs)

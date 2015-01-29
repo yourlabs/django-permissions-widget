@@ -1,4 +1,7 @@
 2015-01-29
+    1.3.0 release: business logic of EXCLUDE_APPS and EXCLUDE_MODELS
+    moved from widget into form field using sql queries instead
+    of filtering in iteration
 
     1.2.1 release: permission type class only for column with input
 
