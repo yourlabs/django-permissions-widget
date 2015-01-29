@@ -13,7 +13,6 @@ from django import template
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import Permission
-import itertools
 
 from .settings import EXCLUDE_APPS, EXCLUDE_MODELS
 
@@ -31,7 +30,9 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
         row = None
         last_app = None
         last_model = None
-        permission_types = {}
+
+        default_permission_types = ['add', 'change', 'delete']
+        custom_permission_types = []
 
         for permission in self.choices.queryset:
             codename = permission.codename
@@ -40,9 +41,6 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
             if permission_type.endswith(model_part):
                 permission_type = permission_type[:-len(model_part)]
             app = permission.content_type.app_label
-
-            setattr(permission, "permission_type", permission_type)
-            setattr(permission, "value", permission.pk)
 
             model_class = permission.content_type.model_class()
             model_class_name = lower(model_class.__name__) if model_class else None
@@ -54,18 +52,14 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
             if model_class_name and u'%s.%s' % (app, model_class_name) in EXCLUDE_MODELS:
                 continue
 
-            permission_types.setdefault(permission_type, [])
-            permission_types[permission_type].append(permission)
+            if permission_type not in default_permission_types + custom_permission_types:
+                custom_permission_types.append(permission_type)
 
             is_app_or_model_different = last_model != model_class or last_app != app
             if is_app_or_model_different:
                 row = dict(model=model_verbose_name, model_class=model_class, app=app, permissions={})
 
-            # place permission
-            row['permissions'][permission_type] = {
-                'value': permission.pk,
-                'name': permission.name,
-            }
+            row['permissions'][permission_type] = permission
 
             if is_app_or_model_different:
                 table.append(row)
@@ -73,16 +67,13 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
             last_app = app
             last_model = model_class
 
-        permission_types_standard = {k: v for k, v in permission_types.iteritems() if len(v) > 1}
-        permission_types_custom = [p for p in itertools.chain(*[v[1] for v in permission_types.iteritems()]) if p.permission_type not in permission_types_standard]
-
         t = get_template('permissions_widget/widget.html')
         c = template.Context({
             'name': name,
             'value': value,
             'table': table,
-            'permission_types': permission_types_standard,
-            'permission_types_custom': permission_types_custom,
+            'default_permission_types': default_permission_types,
+            'custom_permission_types': custom_permission_types
         })
         return mark_safe(t.render(c))
 

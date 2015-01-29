@@ -4,7 +4,7 @@
     <thead>
         <tr>
             <th>{% trans 'App & Model' %}</th>
-            {% for permission_type in permission_types %}
+            {% for permission_type in default_permission_types %}
                 <th>
                     {{ permission_type|capfirst }}
                 </th>
@@ -18,7 +18,7 @@
         {% for row in table %}
             {% ifchanged row.app %}
                 <tr>
-                   <th colspan="{{ permission_types|length|add:"2" }}">
+                   <th colspan="{{ default_permission_types|length|add:"2" }}">
                         {{ row.app|capfirst }}
                    </th>
                 </tr>
@@ -29,26 +29,26 @@
                 <td>
                     {{ row.model|capfirst }}
                 </td>
-                {% for permission_type in permission_types %}
+                {% for permission_type in default_permission_types %}
                     {% with row.permissions|get_item:permission_type as permission %}
                         <td>
                             {% if permission %}
-                                <input name="{{ name }}" title="{{ permission.name }}" {% if permission.value in value %}checked="checked"{% endif %} value="{{ permission.value }}" type="checkbox" />
+                                <input name="{{ name }}" title="{{ permission.name }}" {% if permission.pk in value %}checked="checked"{% endif %} value="{{ permission.pk }}" type="checkbox" />
                                 {{ permission_type|capfirst }}
                             {% endif %}
                         </td>
                     {% endwith %}
                 {% endfor %}
                 <td>
-                    {% with permission_types_custom|get_for_model:row as permissions %}
-                        {% if permissions %}
-                            {% for permission in permissions %}
-                                <input name="{{ name }}" title="{{ permission.name }}" {% if permission.value in value %}checked="checked"{% endif %} value="{{ permission.value }}" type="checkbox" />
+                    {% for permission_type in custom_permission_types %}
+                        {% with row.permissions|get_item:permission_type as permission %}
+                            {% if permission %}
+                                <input name="{{ name }}" title="{{ permission.name }}" {% if permission.pk in value %}checked="checked"{% endif %} value="{{ permission.pk }}" type="checkbox" />
                                 {{ permission.name }}
                                 <br>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
                 </td>
             </tr>
             {% endifchanged %}
