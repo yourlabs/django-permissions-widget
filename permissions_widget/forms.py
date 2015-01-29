@@ -22,16 +22,28 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
     Child of CheckboxSelectMultiple which renders
     `permissions_widget/widget.html` to display the form field.
     """
+
+    custom_permission_types = []
+
     def render(self, name, value, attrs=None, choices=()):
         if value is None:
             value = []
 
+        t = get_template('permissions_widget/widget.html')
+        c = template.Context({
+            'name': name,
+            'value': value,
+            'table': self.get_table(),
+            'default_permission_types': DEFAULT_PERMISSIONS,
+            'custom_permission_types': self.custom_permission_types
+        })
+        return mark_safe(t.render(c))
+
+    def get_table(self):
         table = []
         row = None
         last_app = None
         last_model = None
-
-        custom_permission_types = []
 
         for permission in self.choices.queryset:
             codename = permission.codename
@@ -51,8 +63,8 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
             if model_class_name and u'%s.%s' % (app, model_class_name) in EXCLUDE_MODELS:
                 continue
 
-            if permission_type not in list(DEFAULT_PERMISSIONS) + custom_permission_types:
-                custom_permission_types.append(permission_type)
+            if permission_type not in list(DEFAULT_PERMISSIONS) + self.custom_permission_types:
+                self.custom_permission_types.append(permission_type)
 
             is_app_or_model_different = last_model != model_class or last_app != app
             if is_app_or_model_different:
@@ -66,15 +78,7 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
             last_app = app
             last_model = model_class
 
-        t = get_template('permissions_widget/widget.html')
-        c = template.Context({
-            'name': name,
-            'value': value,
-            'table': table,
-            'default_permission_types': DEFAULT_PERMISSIONS,
-            'custom_permission_types': custom_permission_types
-        })
-        return mark_safe(t.render(c))
+        return table
 
 
 class PermissionSelectMultipleField(forms.ModelMultipleChoiceField):
