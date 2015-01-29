@@ -4,3 +4,4 @@ docs/_build
 *.pyo
 __pycache__
 public/
+dist/
