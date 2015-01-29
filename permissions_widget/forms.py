@@ -25,6 +25,7 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
     """
 
     custom_permission_types = []
+    groups_permissions = []
 
     def render(self, name, value, attrs=None, choices=()):
         if value is None:
@@ -35,6 +36,7 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
             'name': name,
             'value': value,
             'table': self.get_table(),
+            'groups_permissions': self.groups_permissions,
             'default_permission_types': DEFAULT_PERMISSIONS,
             'custom_permission_types': self.custom_permission_types
         })
@@ -81,7 +83,7 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
 class PermissionSelectMultipleField(forms.ModelMultipleChoiceField):
     """
     Simple child of forms.ModelMultipleChoiceField which pre-sets
-    queryset=Permission.objects.all(). It's an optionnal item here for your
+    queryset=Permission.objects.all(). It's an optional item here for your
     convenience.
     """
     widget = PermissionSelectMultipleWidget
@@ -105,3 +107,7 @@ class PermissionSelectMultipleField(forms.ModelMultipleChoiceField):
 
         super(PermissionSelectMultipleField, self).__init__(queryset, *args,
                 **kwargs)
+
+    def disable_group_permissions(self, user):
+        if user.pk:
+            self.widget.groups_permissions = Permission.objects.filter(group__user=user)

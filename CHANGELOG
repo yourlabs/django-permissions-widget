@@ -1,4 +1,6 @@
 2015-01-29
+    1.4.0 release: option to disable inherited groups permissions
+
     1.3.1 release: translation without capture node
 
     1.3.0 release: business logic of EXCLUDE_APPS and EXCLUDE_MODELS
