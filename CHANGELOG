@@ -1,4 +1,20 @@
-2013-09-24 
+2015-01-29
+
+    1.2.0 release: merged table with custom permissions into one table,
+    widget easier to derive, translatable permissions support, default
+    permission types settings, permission type in column class
+
+2015-01-28
+
+    1.1.3 release: checking model class existance
+
+    1.1.2 release: fix of ignoring last row table
+
+    1.1.1 release: fix of model verbose name
+
+    1.1.0 release: support for custom permissions (in separate table)
+
+2013-09-24
 
     1.0.0 release: handle obsolete content types and use verbose name and
     capitalize for labels
