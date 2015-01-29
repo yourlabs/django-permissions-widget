@@ -1,6 +1,10 @@
 """
 Settings for permissions_widget.
 
+DEFAULT_PERMISSIONS
+    Tuple of default (or common) permissions for all models. They will be
+    displayed in separate table column. Custom permissions which are not in this
+    tuple will be stacked together in one (last) column.
 EXCLUDE_APPS
     The permissions widget will exclude any permission for any model in any app
     in the EXCLUDE_APPS list. It contains sensible defaults which you can
@@ -26,7 +30,16 @@ PATCH_USERADMIN
 """
 from django.conf import settings
 
+try:
+    # Django 1.7
+    from django.db.models.options import Options
+    default_django_permissions = Options.default_permissions
+except (ImportError, AttributeError):
+    default_django_permissions = ('add', 'change', 'delete')
 
+
+DEFAULT_PERMISSIONS = getattr(settings, 'PERMISSIONS_WIDGET_DEFAULT_PERMISSIONS',
+      default_django_permissions)
 EXCLUDE_APPS = getattr(settings, 'PERMISSIONS_WIDGET_EXCLUDE_APPS', [
     'sites', 'reversion', 'contenttypes', 'admin', 'sessions',
     'easy_thumbnails',])

@@ -14,7 +14,7 @@ from django.template.loader import get_template
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import Permission
 
-from .settings import EXCLUDE_APPS, EXCLUDE_MODELS
+from .settings import EXCLUDE_APPS, EXCLUDE_MODELS, DEFAULT_PERMISSIONS
 
 
 class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
@@ -31,7 +31,6 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
         last_app = None
         last_model = None
 
-        default_permission_types = ['add', 'change', 'delete']
         custom_permission_types = []
 
         for permission in self.choices.queryset:
@@ -52,7 +51,7 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
             if model_class_name and u'%s.%s' % (app, model_class_name) in EXCLUDE_MODELS:
                 continue
 
-            if permission_type not in default_permission_types + custom_permission_types:
+            if permission_type not in list(DEFAULT_PERMISSIONS) + custom_permission_types:
                 custom_permission_types.append(permission_type)
 
             is_app_or_model_different = last_model != model_class or last_app != app
@@ -72,7 +71,7 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
             'name': name,
             'value': value,
             'table': table,
-            'default_permission_types': default_permission_types,
+            'default_permission_types': DEFAULT_PERMISSIONS,
             'custom_permission_types': custom_permission_types
         })
         return mark_safe(t.render(c))
