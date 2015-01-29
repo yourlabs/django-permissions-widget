@@ -31,7 +31,7 @@
                 </td>
                 {% for permission_type in default_permission_types %}
                     {% with row.permissions|get_item:permission_type as permission %}
-                        <td class="{{ permission_type }}">
+                        <td {% if permission %}class="{{ permission_type }}"{% endif %}>
                             {% if permission %}
                                 {% capture translated_permission_name %}{% blocktrans with translated_permission_name=permission.name|translate|capfirst %}{{ translated_permission_name }}{% endblocktrans %}{% endcapture %}
                                 <input name="{{ name }}" title="{{ translated_permission_name }}" {% if permission.pk in value %}checked="checked"{% endif %} value="{{ permission.pk }}" type="checkbox" />

@@ -1,5 +1,7 @@
 2015-01-29
 
+    1.2.1 release: permission type class only for column with input
+
     1.2.0 release: merged table with custom permissions into one table,
     widget easier to derive, translatable permissions support, default
     permission types settings, permission type in column class
