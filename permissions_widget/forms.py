@@ -36,7 +36,6 @@ def filter_permissions(queryset):
 
     include_models_q = Q()
 
-    print(MODELS_ONLY)
     if MODELS_ONLY is not None:
         for include_model in MODELS_ONLY:
             app_label, model = include_model.split('.')
@@ -44,19 +43,15 @@ def filter_permissions(queryset):
                 content_type__app_label=app_label,
                 content_type__model=model
             )
-        print(include_models_q)
         queryset = queryset.filter(
             include_models_q
         )
 
-    print(APPS_ONLY)
     if APPS_ONLY is not None:
         queryset = queryset.filter(
             Q(content_type__app_label__in=APPS_ONLY),
             #include_models_q
         )
-
-    print(queryset)
 
     return queryset
 
