@@ -20,11 +20,10 @@ class PermissionWidget(Field):
 
     def __init__(self, *args, **kwargs):
         super(PermissionWidget, self).__init__(*args, **kwargs)
-        self.queryset = kwargs['queryset'] if 'queryset' in kwargs else Permission.objects.select_related()
-        self.groups_permissions = kwargs['groups_permissions'] if 'groups_permissions' in kwargs else []
-        self.queryset = filter_permissions(self.queryset)
         self.widget = PermissionSelectMultipleWidget()
-        self.widget.queryset = self.queryset
+        self.widget.queryset = kwargs['queryset'] if 'queryset' in kwargs else Permission.objects.select_related()
+        self.widget.queryset = filter_permissions(self.widget.queryset)
+        self.widget.groups_permissions = kwargs['groups_permissions'] if 'groups_permissions' in kwargs else []
 
     def render(self, form, form_style, context, template_pack=TEMPLATE_PACK, extra_context=None, **kwargs):
         if extra_context is None:
