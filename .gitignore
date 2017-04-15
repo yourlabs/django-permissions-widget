@@ -2,6 +2,7 @@ docs/_build
 *.egg-info
 *.pyc
 *.pyo
+.idea
 __pycache__
 public/
 dist/
