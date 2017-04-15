@@ -18,6 +18,23 @@ from django.contrib.auth.models import Permission
 from .settings import EXCLUDE_APPS, EXCLUDE_MODELS, DEFAULT_PERMISSIONS
 
 
+def exclude_permissions(queryset):
+    # exclude models and apps by settings
+    exclude_models_q = Q()
+
+    for exclude_model in EXCLUDE_MODELS:
+        app_label, model = exclude_model.split('.')
+        exclude_models_q |= Q(
+            content_type__app_label=app_label,
+            content_type__model=model
+        )
+
+    return queryset.exclude(
+        Q(content_type__app_label__in=EXCLUDE_APPS) |
+        exclude_models_q
+    )
+
+
 class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
     """
     Child of CheckboxSelectMultiple which renders
@@ -48,7 +65,12 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
         last_app = None
         last_model = None
 
-        for permission in self.choices.queryset:
+        try:
+            permissions = self.choices.queryset
+        except AttributeError:
+            permissions = self.queryset
+
+        for permission in permissions:
             # get permission type from codename
             codename = permission.codename
             model_part = "_" + permission.content_type.model
@@ -92,18 +114,7 @@ class PermissionSelectMultipleField(forms.ModelMultipleChoiceField):
         if queryset is None:
             queryset = Permission.objects.all()
 
-        # exclude models and apps by settings
-        exclude_models_q = Q()
-        for exclude_model in EXCLUDE_MODELS:
-            app_label, model = exclude_model.split('.')
-            exclude_models_q |= Q(
-                content_type__app_label=app_label,
-                content_type__model=model
-            )
-        queryset = queryset.exclude(
-            Q(content_type__app_label__in=EXCLUDE_APPS) |
-            exclude_models_q
-        )
+        queryset = exclude_permissions(queryset)
 
         super(PermissionSelectMultipleField, self).__init__(queryset, *args,
                 **kwargs)
