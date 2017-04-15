@@ -15,10 +15,10 @@ from django.template.loader import get_template
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import Permission
 
-from .settings import EXCLUDE_APPS, EXCLUDE_MODELS, DEFAULT_PERMISSIONS
+from .settings import EXCLUDE_APPS, EXCLUDE_MODELS, APPS_ONLY, MODELS_ONLY, DEFAULT_PERMISSIONS
 
 
-def exclude_permissions(queryset):
+def filter_permissions(queryset):
     # exclude models and apps by settings
     exclude_models_q = Q()
 
@@ -29,10 +29,36 @@ def exclude_permissions(queryset):
             content_type__model=model
         )
 
-    return queryset.exclude(
+    queryset = queryset.exclude(
         Q(content_type__app_label__in=EXCLUDE_APPS) |
         exclude_models_q
     )
+
+    include_models_q = Q()
+
+    print(MODELS_ONLY)
+    if MODELS_ONLY is not None:
+        for include_model in MODELS_ONLY:
+            app_label, model = include_model.split('.')
+            include_models_q |= Q(
+                content_type__app_label=app_label,
+                content_type__model=model
+            )
+        print(include_models_q)
+        queryset = queryset.filter(
+            include_models_q
+        )
+
+    print(APPS_ONLY)
+    if APPS_ONLY is not None:
+        queryset = queryset.filter(
+            Q(content_type__app_label__in=APPS_ONLY),
+            #include_models_q
+        )
+
+    print(queryset)
+
+    return queryset
 
 
 class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
@@ -114,7 +140,7 @@ class PermissionSelectMultipleField(forms.ModelMultipleChoiceField):
         if queryset is None:
             queryset = Permission.objects.all()
 
-        queryset = exclude_permissions(queryset)
+        queryset = filter_permissions(queryset)
 
         super(PermissionSelectMultipleField, self).__init__(queryset, *args,
                 **kwargs)

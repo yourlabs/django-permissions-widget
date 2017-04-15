@@ -1,3 +1,9 @@
+2017-04-15
+    1.5.0 release: support for crispy forms,
+    implementation of PATCH_USERADMIN and PATCH_GROUPADMIN settings,
+    APPS_ONLY and MODELS_ONLY settings
+
+
 2015-01-29
     1.4.0 release: option to disable inherited groups permissions
 

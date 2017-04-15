@@ -1,9 +1,8 @@
 from crispy_forms.layout import Field
 from crispy_forms.utils import TEMPLATE_PACK
 from django.contrib.auth.models import Permission
-from django.db.models import Q
-from permissions_widget.forms import PermissionSelectMultipleWidget, exclude_permissions
-from .settings import EXCLUDE_APPS, EXCLUDE_MODELS, DEFAULT_PERMISSIONS
+from permissions_widget.forms import PermissionSelectMultipleWidget, filter_permissions
+from .settings import DEFAULT_PERMISSIONS
 
 
 class PermissionWidget(Field):
@@ -23,7 +22,7 @@ class PermissionWidget(Field):
         super(PermissionWidget, self).__init__(*args, **kwargs)
         self.queryset = kwargs['queryset'] if 'queryset' in kwargs else Permission.objects.select_related()
         self.groups_permissions = kwargs['groups_permissions'] if 'groups_permissions' in kwargs else []
-        self.queryset = exclude_permissions(self.queryset)
+        self.queryset = filter_permissions(self.queryset)
         self.widget = PermissionSelectMultipleWidget()
         self.widget.queryset = self.queryset
 
