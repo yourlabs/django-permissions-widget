@@ -17,36 +17,35 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 
 from django.contrib import admin
-from django import forms
 
 from .forms import PermissionSelectMultipleField
+from . import settings
 
 
-User = get_user_model()
-OriginalUserAdmin = admin.site._registry[User].__class__
-OriginalUserChangeForm = OriginalUserAdmin.form
+if settings.PATCH_USERADMIN:
+    User = get_user_model()
+    OriginalUserAdmin = admin.site._registry[User].__class__
+    OriginalUserChangeForm = OriginalUserAdmin.form
 
-class NewUserChangeForm(OriginalUserChangeForm):
-    user_permissions = PermissionSelectMultipleField(required=False)
+    class NewUserChangeForm(OriginalUserChangeForm):
+        user_permissions = PermissionSelectMultipleField(required=False)
 
+    class NewUserAdmin(OriginalUserAdmin):
+        form = NewUserChangeForm
 
-class NewUserAdmin(OriginalUserAdmin):
-    form = NewUserChangeForm
-
-admin.site.unregister(User)
-admin.site.register(User, NewUserAdmin)
-
-
-OriginalGroupAdmin = admin.site._registry[Group].__class__
-OriginalGroupChangeForm = OriginalGroupAdmin.form
+    admin.site.unregister(User)
+    admin.site.register(User, NewUserAdmin)
 
 
-class NewGroupChangeForm(OriginalGroupChangeForm):
-    permissions = PermissionSelectMultipleField(required=False)
+if settings.PATCH_GROUPADMIN:
+    OriginalGroupAdmin = admin.site._registry[Group].__class__
+    OriginalGroupChangeForm = OriginalGroupAdmin.form
 
+    class NewGroupChangeForm(OriginalGroupChangeForm):
+        permissions = PermissionSelectMultipleField(required=False)
 
-class NewGroupAdmin(OriginalGroupAdmin):
-    form = NewGroupChangeForm
+    class NewGroupAdmin(OriginalGroupAdmin):
+        form = NewGroupChangeForm
 
-admin.site.unregister(Group)
-admin.site.register(Group, NewGroupAdmin)
+    admin.site.unregister(Group)
+    admin.site.register(Group, NewGroupAdmin)
