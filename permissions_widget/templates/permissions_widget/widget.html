@@ -18,7 +18,7 @@
         {% for row in table %}
             {% ifchanged row.app %}
                 <tr>
-                   <th colspan="{{ default_permission_types|length|add:"2" }}">
+                   <th class="app" colspan="{{ default_permission_types|length|add:"2" }}">
                         {{ row.app|translate|capfirst }}
                    </th>
                 </tr>
@@ -26,7 +26,7 @@
 
             {% ifchanged row.model %}
             <tr>
-                <td>
+                <td class="model">
                     {{ row.model|capfirst }}
                 </td>
                 {% for permission_type in default_permission_types %}
