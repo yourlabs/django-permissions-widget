@@ -70,15 +70,22 @@ class PermissionSelectMultipleWidget(forms.CheckboxSelectMultiple):
             value = []
 
         t = get_template('permissions_widget/widget.html')
-        c = template.Context({
+        c = {
             'name': name,
             'value': value,
             'table': self.get_table(),
             'groups_permissions': self.groups_permissions,
             'default_permission_types': DEFAULT_PERMISSIONS,
             'custom_permission_types': self.custom_permission_types
-        })
-        return mark_safe(t.render(c))
+        }
+        ctx = template.Context(c)
+
+        try:
+            # Django < 1.11
+            return mark_safe(t.render(ctx))
+        except TypeError:
+            # Django >= 1.11
+            return mark_safe(t.render(c))
 
     def get_table(self):
         table = []
